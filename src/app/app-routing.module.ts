@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
+import { Routes, RouterModule, RouteReuseStrategy } from '@angular/router';
+import { CustomReuseStrategy } from "./custom-reuse-strategy";
 
 import { HomeComponent } from './home/home.component';
 import { TestComponent } from './test/test.component';
@@ -24,8 +25,11 @@ const routes: Routes = [
     RouterModule.forRoot(routes)    
   ],
   declarations: [HomeComponent, TestComponent],
+  providers: [
+    { provide: RouteReuseStrategy, useClass: CustomReuseStrategy }
+  ],
   exports: [
-    RouterModule
+    RouterModule,
   ]
 })
 export class AppRoutingModule { }
