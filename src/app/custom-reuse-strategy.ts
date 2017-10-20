@@ -1,39 +1,56 @@
-import {RouteReuseStrategy, DefaultUrlSerializer, ActivatedRouteSnapshot, DetachedRouteHandle} from "@angular/router";
+import {RouteReuseStrategy, ActivatedRouteSnapshot, DetachedRouteHandle} from "@angular/router";
 
+
+/*
+    load
+
+    1. shouldReuseRoute
+    2. retrive
+    3. shouldAttachs
+
+    change
+
+    1. shouldReuseRoute
+    2. retrive
+    3. shouldDetach
+    4. store
+    5. shouldAttach 
+    
+*/
 export class CustomReuseStrategy implements RouteReuseStrategy {
 
     handlers: {[key: string]: DetachedRouteHandle} = {};
 
-    //route 를 재사용할것인가. 어디서 어디로 옮길것인지 스냅샷이 넘어온다. 주소를 따져봐서, 같으면 재사용하고, 다르면 재사용하지 않는다.
+    //route 를 재사용할것인가. 어디서 어디로 옮길것인지 스냅샷이 넘어온다.
     shouldReuseRoute(future: ActivatedRouteSnapshot, curr: ActivatedRouteSnapshot): boolean {
-        return this.getURL(curr) === this.getURL(future) 
+        console.log('shouldReuseRoute ',curr, future);
+        return future.routeConfig === curr.routeConfig;
     }
 
-    //Detach 될때 상태를 저장할건지 아닌지 리턴해준다. detach 되는 Route를 저장해 두려면 true, 저장하지 않으려면 false
+    //Detach 될때 상태를 저장할건지 아닌지 리턴해준다.
     shouldDetach(route: ActivatedRouteSnapshot): boolean {
-        //나는 URL이 루트인것만  저장해 둘것이기 때문에 루트인것만 true를 준다.
-        if(this.getURL(route) == "/"){
-            return true;
-        }else{
-            return false;
-        }
+        console.log('shouldDetach', route);
+        return true; // 저장 true 저장안함 false
     }
 
-//위에서 저장하기로 한 스냅샷을 저장해둔다.
+    //위에서 저장하기로 한 스냅샷을 저장해둔다.
     store(route: ActivatedRouteSnapshot, handle: DetachedRouteHandle): void {
-        let key = this.getURL(route);
-        this.handlers[key] = handle;
+        console.log('store', route, handle);
+        
+        this.handlers[route.routeConfig.path] = handle;
+        console.log('handlers', this.handlers);
     }
 
-    //저장해둔 Snapshot에 Attach 할 때의 델리게이트.
+    //저장해둔 Snapshot에 Attach 할 때의 대리 콜백
     shouldAttach(route: ActivatedRouteSnapshot): boolean {
-        return !!route.routeConfig && !!this.handlers[this.getURL(route)];
+        console.log('shouldAttach', route);
+        return !!route.routeConfig && !!this.handlers[route.routeConfig.path];
     }
 
     retrieve(route: ActivatedRouteSnapshot): DetachedRouteHandle {
+        console.log('retrieve', route);
         if (!route.routeConfig) return null;
-        let key = this.getURL(route);
-        return this.handlers[key];
+        return this.handlers[route.routeConfig.path];
     }
 
     //routeSnapShot 에서 URL 을 계산해서 리턴해준다.
@@ -49,4 +66,5 @@ export class CustomReuseStrategy implements RouteReuseStrategy {
         url = "/" + url;
         return url;
     }
+
 }
