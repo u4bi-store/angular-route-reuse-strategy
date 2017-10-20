@@ -4,6 +4,7 @@ import { CustomReuseStrategy } from "./custom-reuse-strategy";
 
 import { HomeComponent } from './home/home.component';
 import { TestComponent } from './test/test.component';
+import { SaveComponent } from './save/save.component';
 
 const routes: Routes = [
   {
@@ -15,6 +16,10 @@ const routes: Routes = [
     component: TestComponent
   },
   {
+    path: 'save',
+    component: SaveComponent
+  },
+  {
     path: '**',
     redirectTo: ''
   }
@@ -24,7 +29,7 @@ const routes: Routes = [
   imports: [
     RouterModule.forRoot(routes)    
   ],
-  declarations: [HomeComponent, TestComponent],
+  declarations: [HomeComponent, TestComponent, SaveComponent],
   providers: [
     { provide: RouteReuseStrategy, useClass: CustomReuseStrategy }
   ],
